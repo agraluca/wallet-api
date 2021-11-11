@@ -35,40 +35,50 @@ async function run(url) {
     })
     .then((res) => {
       const zip = new AdmZip(res.data);
-      var zipEntries = zip.getEntries();
 
-      // for (var i = 0; i < zipEntries.length; i++) {
-      //   console.log("ahgeauEIUHOEHIJLSAHN", zip.readAsText(zipEntries[i]));
-      // }
       zip.extractAllTo(path, true);
-
-      //console.log(zipEntries);
-      //res.data.pipe(writer);
     });
-  console.log(`https://bvmf.bmfbovespa.com.br${pathFile}`);
 
   return `${path}/${fileName}`.replace(".ZIP", ".TXT");
 }
-const ata = await run(
+const archivePath = await run(
   "https://bvmf.bmfbovespa.com.br/pt-br/cotacoes-historicas/FormConsultaValida.asp?arq=COTAHIST_D09112021.ZIP"
 );
-// console.log(ata);
-// Fs.readFile(ata, "utf-8", (err, data) => {
-//   //fs.readFileSync('file.txt').toString().split("\n");
-//   console.log("data", data.split(" ")[1]);
-// });
 
-const data = Fs.readFileSync(ata).toString().split("\n");
+const data = Fs.readFileSync(archivePath).toString().split("\n");
 data.pop();
 data.pop();
 data.shift();
 
-const convertedData = data[70].split(" ").filter((line) => line !== "");
-console.log("full", convertedData);
-//const tickerName = convertedData[0].replace(/[0-9]/g, "");
-const tickerName = convertedData[0].map((item) => console.log(item));
+const stockInfoArray = data.map((item) => {
+  const tickerName = item.slice(12, 23).trim();
+  const companyName = item.slice(27, 39).trim();
+  const tickerType = item.slice(39, 42).trim();
+  const stringPrice = item.slice(109, 121);
 
-console.log("tickerName", tickerName);
+  const priceNumberList = [...stringPrice].reduce((acc, item) => {
+    if (Number(item) !== 0) {
+      acc.push(item);
+    }
+
+    return acc;
+  }, []);
+  const index = stringPrice.indexOf(priceNumberList[0]);
+  const unformattedPrice = stringPrice.slice(index, stringPrice.length);
+
+  const divisionNumber = unformattedPrice.length > 2 ? 100 : 1;
+
+  const formattedPrice = new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(unformattedPrice / divisionNumber);
+
+  return { tickerName, companyName, tickerType, formattedPrice };
+});
+
+console.log(stockInfoArray);
 
 app.get("/", (req, res) => res.send("Funcionando"));
 
