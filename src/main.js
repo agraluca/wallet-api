@@ -22,23 +22,23 @@ async function getFile(url) {
   const path = Path.resolve(__dirname, "src", "files");
 
   const pathFile = "/InstDados/SerHist/" + fileName;
-  console.log("pathFile", pathFile);
   const httpsAgent = new https.Agent({ rejectUnauthorized: false });
   axios.defaults.httpsAgent = httpsAgent;
 
-  axios
-    .get(`https://bvmf.bmfbovespa.com.br${pathFile}`, {
+  const response = await axios.get(
+    `https://bvmf.bmfbovespa.com.br${pathFile}`,
+    {
       headers: {
         "Content-Type": "text/plain;charset=UTF-8",
         "accept-encoding": "gzip, deflate, br",
       },
       responseType: "arraybuffer",
-    })
-    .then((res) => {
-      const zip = new AdmZip(res.data);
+    }
+  );
 
-      zip.extractAllTo(path, true);
-    });
+  const zip = new AdmZip(response.data);
+
+  zip.extractAllTo(path, true);
 
   return `${path}/${fileName}`.replace(".ZIP", ".TXT");
 }
@@ -66,7 +66,6 @@ async function runApp() {
     );
 
     if (archivePath) {
-      console.log("archivepaTH", archivePath);
       const data = Fs.readFileSync(archivePath).toString().split("\n");
       data.pop();
       data.pop();
@@ -100,13 +99,11 @@ async function runApp() {
         return { tickerName, companyName, tickerType, formattedPrice };
       });
 
-      try {
-        console.log("xo ve aq", archivePath);
-        await Fs.unlinkSync(archivePath);
-        console.log("funfo");
-      } catch (error) {
-        console.log("deu erro tio", error);
-      }
+      Fs.unlink(archivePath, (err) => {
+        if (err) throw err;
+      });
+
+      console.log(stockInfoArray);
     }
   }
 }
@@ -122,19 +119,14 @@ async function resetAtMidnight() {
     0 // ...at 00:00:00 hours
   );
   let msToMidnight = night.getTime() - now.getTime();
-  console.log("antesd osetTImeout");
   //      <-- This is the function being called at midnight.
 
   setTimeout(async () => {
-    console.log("setTImeout antes do await");
     runApp(); //      <-- This is the function being called at midnight.
-    console.log("setTImeout");
     resetAtMidnight(); //      Then, reset again next midnight.
   }, 15000);
 }
-///resetAtMidnight();
-
-runApp();
+resetAtMidnight();
 
 app.get("/", (req, res) => res.send("Funcionando"));
 
