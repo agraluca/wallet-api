@@ -22,6 +22,7 @@ async function run(url) {
   const path = Path.resolve(__dirname, "src", "files");
 
   const pathFile = "/InstDados/SerHist/" + fileName;
+  console.log("pathFile", pathFile);
   const httpsAgent = new https.Agent({ rejectUnauthorized: false });
   axios.defaults.httpsAgent = httpsAgent;
 
@@ -41,44 +42,64 @@ async function run(url) {
 
   return `${path}/${fileName}`.replace(".ZIP", ".TXT");
 }
-const archivePath = await run(
-  "https://bvmf.bmfbovespa.com.br/pt-br/cotacoes-historicas/FormConsultaValida.asp?arq=COTAHIST_D09112021.ZIP"
-);
 
-const data = Fs.readFileSync(archivePath).toString().split("\n");
-data.pop();
-data.pop();
-data.shift();
+const date = new Date();
 
-const stockInfoArray = data.map((item) => {
-  const tickerName = item.slice(12, 23).trim();
-  const companyName = item.slice(27, 39).trim();
-  const tickerType = item.slice(39, 42).trim();
-  const stringPrice = item.slice(109, 121);
+const weekDay = date.getDay();
 
-  const priceNumberList = [...stringPrice].reduce((acc, item) => {
-    if (Number(item) !== 0) {
-      acc.push(item);
-    }
+if (weekDay !== 0 && weekDay !== 1) {
+  const yesterday = new Date(date);
 
-    return acc;
-  }, []);
-  const index = stringPrice.indexOf(priceNumberList[0]);
-  const unformattedPrice = stringPrice.slice(index, stringPrice.length);
+  yesterday.setDate(yesterday.getDate() - 1);
 
-  const divisionNumber = unformattedPrice.length > 2 ? 100 : 1;
+  const day =
+    yesterday.getDate().toString().length === 1
+      ? `0${yesterday.getDate()}`
+      : yesterday.getDate();
+  const month = yesterday.getMonth() + 1;
 
-  const formattedPrice = new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(unformattedPrice / divisionNumber);
+  const fullYear = yesterday.getFullYear();
+  const formattedDate = `${day}${month}${fullYear}`;
+  const archivePath = await run(
+    `https://bvmf.bmfbovespa.com.br/pt-br/cotacoes-historicas/FormConsultaValida.asp?arq=COTAHIST_D${formattedDate}.ZIP`
+  );
 
-  return { tickerName, companyName, tickerType, formattedPrice };
-});
+  if (archivePath) {
+  //   const data = Fs.readFileSync(archivePath).toString().split("\n");
+  //   data.pop();
+  //   data.pop();
+  //   data.shift();
 
-console.log(stockInfoArray);
+  //   const stockInfoArray = data.map((item) => {
+  //     const tickerName = item.slice(12, 23).trim();
+  //     const companyName = item.slice(27, 39).trim();
+  //     const tickerType = item.slice(39, 42).trim();
+  //     const stringPrice = item.slice(109, 121);
+
+  //     const priceNumberList = [...stringPrice].reduce((acc, item) => {
+  //       if (Number(item) !== 0) {
+  //         acc.push(item);
+  //       }
+
+  //       return acc;
+  //     }, []);
+  //     const index = stringPrice.indexOf(priceNumberList[0]);
+  //     const unformattedPrice = stringPrice.slice(index, stringPrice.length);
+
+  //     const divisionNumber = unformattedPrice.length > 2 ? 100 : 1;
+
+  //     const formattedPrice = new Intl.NumberFormat("pt-BR", {
+  //       style: "currency",
+  //       currency: "BRL",
+  //       minimumFractionDigits: 2,
+  //       maximumFractionDigits: 2,
+  //     }).format(unformattedPrice / divisionNumber);
+
+  //     return { tickerName, companyName, tickerType, formattedPrice };
+  //   });
+  // }
+  // console.log(stockInfoArray);
+}
 
 app.get("/", (req, res) => res.send("Funcionando"));
 
