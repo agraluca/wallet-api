@@ -43,63 +43,68 @@ async function run(url) {
   return `${path}/${fileName}`.replace(".ZIP", ".TXT");
 }
 
-const date = new Date();
+async function runApp() {
+  const date = new Date();
 
-const weekDay = date.getDay();
+  const weekDay = date.getDay();
 
-if (weekDay !== 0 && weekDay !== 1) {
-  const yesterday = new Date(date);
+  if (weekDay !== 0 && weekDay !== 1) {
+    const yesterday = new Date(date);
 
-  yesterday.setDate(yesterday.getDate() - 1);
+    yesterday.setDate(yesterday.getDate() - 1);
 
-  const day =
-    yesterday.getDate().toString().length === 1
-      ? `0${yesterday.getDate()}`
-      : yesterday.getDate();
-  const month = yesterday.getMonth() + 1;
+    const day =
+      yesterday.getDate().toString().length === 1
+        ? `0${yesterday.getDate()}`
+        : yesterday.getDate();
+    const month = yesterday.getMonth() + 1;
 
-  const fullYear = yesterday.getFullYear();
-  const formattedDate = `${day}${month}${fullYear}`;
-  const archivePath = await run(
-    `https://bvmf.bmfbovespa.com.br/pt-br/cotacoes-historicas/FormConsultaValida.asp?arq=COTAHIST_D${formattedDate}.ZIP`
-  );
+    const fullYear = yesterday.getFullYear();
+    const formattedDate = `${day}${month}${fullYear}`;
+    const archivePath = await run(
+      `https://bvmf.bmfbovespa.com.br/pt-br/cotacoes-historicas/FormConsultaValida.asp?arq=COTAHIST_D${formattedDate}.ZIP`
+    );
 
-  if (archivePath) {
-  //   const data = Fs.readFileSync(archivePath).toString().split("\n");
-  //   data.pop();
-  //   data.pop();
-  //   data.shift();
+    if (archivePath) {
+      const data = Fs.readFileSync(archivePath).toString().split("\n");
+      data.pop();
+      data.pop();
+      data.shift();
 
-  //   const stockInfoArray = data.map((item) => {
-  //     const tickerName = item.slice(12, 23).trim();
-  //     const companyName = item.slice(27, 39).trim();
-  //     const tickerType = item.slice(39, 42).trim();
-  //     const stringPrice = item.slice(109, 121);
+      const stockInfoArray = data.map((item) => {
+        const tickerName = item.slice(12, 23).trim();
+        const companyName = item.slice(27, 39).trim();
+        const tickerType = item.slice(39, 42).trim();
+        const stringPrice = item.slice(109, 121);
 
-  //     const priceNumberList = [...stringPrice].reduce((acc, item) => {
-  //       if (Number(item) !== 0) {
-  //         acc.push(item);
-  //       }
+        const priceNumberList = [...stringPrice].reduce((acc, item) => {
+          if (Number(item) !== 0) {
+            acc.push(item);
+          }
 
-  //       return acc;
-  //     }, []);
-  //     const index = stringPrice.indexOf(priceNumberList[0]);
-  //     const unformattedPrice = stringPrice.slice(index, stringPrice.length);
+          return acc;
+        }, []);
+        const index = stringPrice.indexOf(priceNumberList[0]);
+        const unformattedPrice = stringPrice.slice(index, stringPrice.length);
 
-  //     const divisionNumber = unformattedPrice.length > 2 ? 100 : 1;
+        const divisionNumber = unformattedPrice.length > 2 ? 100 : 1;
 
-  //     const formattedPrice = new Intl.NumberFormat("pt-BR", {
-  //       style: "currency",
-  //       currency: "BRL",
-  //       minimumFractionDigits: 2,
-  //       maximumFractionDigits: 2,
-  //     }).format(unformattedPrice / divisionNumber);
+        const formattedPrice = new Intl.NumberFormat("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(unformattedPrice / divisionNumber);
 
-  //     return { tickerName, companyName, tickerType, formattedPrice };
-  //   });
-  // }
-  // console.log(stockInfoArray);
+        return { tickerName, companyName, tickerType, formattedPrice };
+      });
+
+      console.log("oe", stockInfoArray);
+    }
+  }
 }
+
+runApp();
 
 app.get("/", (req, res) => res.send("Funcionando"));
 
