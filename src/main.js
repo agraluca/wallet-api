@@ -16,7 +16,7 @@ app.use(cors());
 
 const __dirname = Path.resolve();
 
-async function run(url) {
+async function getFile(url) {
   const archiveName = url;
   const fileName = archiveName.split("=")[1];
   const path = Path.resolve(__dirname, "src", "files");
@@ -61,11 +61,12 @@ async function runApp() {
 
     const fullYear = yesterday.getFullYear();
     const formattedDate = `${day}${month}${fullYear}`;
-    const archivePath = await run(
+    const archivePath = await getFile(
       `https://bvmf.bmfbovespa.com.br/pt-br/cotacoes-historicas/FormConsultaValida.asp?arq=COTAHIST_D${formattedDate}.ZIP`
     );
 
     if (archivePath) {
+      console.log("archivepaTH", archivePath);
       const data = Fs.readFileSync(archivePath).toString().split("\n");
       data.pop();
       data.pop();
@@ -99,10 +100,39 @@ async function runApp() {
         return { tickerName, companyName, tickerType, formattedPrice };
       });
 
-      console.log("oe", stockInfoArray);
+      try {
+        console.log("xo ve aq", archivePath);
+        await Fs.unlinkSync(archivePath);
+        console.log("funfo");
+      } catch (error) {
+        console.log("deu erro tio", error);
+      }
     }
   }
 }
+
+async function resetAtMidnight() {
+  let now = new Date();
+  let night = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + 1, // the next day, ...
+    0,
+    0,
+    0 // ...at 00:00:00 hours
+  );
+  let msToMidnight = night.getTime() - now.getTime();
+  console.log("antesd osetTImeout");
+  //      <-- This is the function being called at midnight.
+
+  setTimeout(async () => {
+    console.log("setTImeout antes do await");
+    runApp(); //      <-- This is the function being called at midnight.
+    console.log("setTImeout");
+    resetAtMidnight(); //      Then, reset again next midnight.
+  }, 15000);
+}
+///resetAtMidnight();
 
 runApp();
 
