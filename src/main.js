@@ -113,18 +113,17 @@ async function resetAtMidnight() {
   let night = new Date(
     now.getFullYear(),
     now.getMonth(),
-    now.getDate() + 1, // the next day, ...
+    now.getDate() + 1,
     0,
     0,
-    0 // ...at 00:00:00 hours
+    0
   );
   let msToMidnight = night.getTime() - now.getTime();
-  //      <-- This is the function being called at midnight.
 
-  setTimeout(async () => {
-    runApp(); //      <-- This is the function being called at midnight.
-    resetAtMidnight(); //      Then, reset again next midnight.
-  }, 15000);
+  setTimeout(() => {
+    runApp();
+    resetAtMidnight();
+  }, msToMidnight);
 }
 resetAtMidnight();
 
