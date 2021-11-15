@@ -12,15 +12,19 @@ function index(req, res) {
 
 function show(req, res) {
   const tickerName = req.params.ticker.toUpperCase();
-  StockModel.findOne({ tickerName }, (err, data) => {
-    if (err) {
-      res.status(500).send(err);
-    } else {
-      data
-        ? res.status(200).send(data)
-        : res.status(404).send({ error: "Not Found a Stock with this name" });
+  StockModel.findOne(
+    { tickerName },
+    "tickerName companyName tyckerType formattedPrice",
+    (err, data) => {
+      if (err) {
+        res.status(500).send(err);
+      } else {
+        data
+          ? res.status(200).send(data)
+          : res.status(404).send({ error: "Not Found a Stock with this name" });
+      }
     }
-  });
+  );
 }
 
 export const Stock = {
