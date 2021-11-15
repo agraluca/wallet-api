@@ -17,7 +17,9 @@ app.use(cors());
 
 db.connect();
 
-resetAtMidnight(filesController.runApp);
+//resetAtMidnight(filesController.runApp);
+
+filesController.runApp();
 
 app.use(routes);
 app.listen(port, () => {
