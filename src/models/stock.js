@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const ContentSchema = new mongoose.Schema({
+const StockSchema = new mongoose.Schema({
   tickerName: {
     type: String,
     required: true,
@@ -19,4 +19,4 @@ const ContentSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.model("stockInfo", ContentSchema);
+export default mongoose.model("stockInfo", StockSchema);

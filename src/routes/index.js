@@ -4,8 +4,10 @@ import * as controllers from "../controllers/index.js";
 
 const routes = express.Router();
 
-routes.get("/stock/:ticker", controllers.show);
+routes.get("/stock", controllers.Stock.index);
 
-routes.get("/", (req, res) => res.send("Funcionando"));
+routes.get("/stock/:ticker", controllers.Stock.show);
+
+routes.get("/", (req, res) => res.send("Wallet API"));
 
 export default routes;
