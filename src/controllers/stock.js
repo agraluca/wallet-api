@@ -3,9 +3,9 @@ import StockModel from "../models/stock.js";
 function index(req, res) {
   StockModel.find((err, data) => {
     if (err) {
-      res.status(500).send(err);
+      res.status(500).json(err);
     } else {
-      res.status(200).send(data);
+      res.status(200).json(data);
     }
   });
 }
@@ -17,11 +17,11 @@ function show(req, res) {
     "tickerName companyName tyckerType formattedPrice",
     (err, data) => {
       if (err) {
-        res.status(500).send(err);
+        res.status(500).json(err);
       } else {
         data
-          ? res.status(200).send(data)
-          : res.status(404).send({ error: "Not Found a Stock with this name" });
+          ? res.status(200).json(data)
+          : res.status(404).json({ error: "Not Found a Stock with this name" });
       }
     }
   );
