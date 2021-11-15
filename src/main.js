@@ -4,17 +4,27 @@ import axios from "axios";
 import https from "https";
 import Path from "path";
 import Fs from "fs";
+import env from "dotenv";
 
 import AdmZip from "adm-zip";
 
-const app = express();
+import routes from "./routes/index.js";
+import mongoose from "mongoose";
 
+const app = express();
+env.config();
 const port = process.env.PORT || 4000;
 
 app.use(express.json());
 app.use(cors());
 
 const __dirname = Path.resolve();
+
+mongoose.connect(process.env.CONNECTION_MONGO, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+mongoose.connection.once("open", () => console.log("db está conectado"));
 
 async function getFile(url) {
   const archiveName = url;
@@ -104,6 +114,7 @@ async function runApp() {
       });
 
       console.log(stockInfoArray);
+      await stockInfoArray.save().then(() => console.log("salvou"));
     }
   }
 }
@@ -127,6 +138,5 @@ async function resetAtMidnight() {
 }
 resetAtMidnight();
 
-app.get("/", (req, res) => res.send("Funcionando"));
-
+app.use(routes);
 app.listen(port, () => console.log("Funcionando"));
