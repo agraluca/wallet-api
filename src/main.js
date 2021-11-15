@@ -76,6 +76,8 @@ async function runApp() {
     );
 
     if (archivePath) {
+      const stockInfo = mongoose.model("stockInfo");
+      stockInfo.deleteMany({});
       const data = Fs.readFileSync(archivePath).toString().split("\n");
       data.pop();
       data.pop();
@@ -106,6 +108,15 @@ async function runApp() {
           maximumFractionDigits: 2,
         }).format(unformattedPrice / divisionNumber);
 
+        const line = new stockInfo({
+          tickerName,
+          companyName,
+          tickerType,
+          formattedPrice,
+        });
+
+        line.save();
+
         return { tickerName, companyName, tickerType, formattedPrice };
       });
 
@@ -114,7 +125,6 @@ async function runApp() {
       });
 
       console.log(stockInfoArray);
-      await stockInfoArray.save().then(() => console.log("salvou"));
     }
   }
 }

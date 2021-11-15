@@ -1,6 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
-import Contents from "../model/contents.js";
+import StockInfo from "../model/contents.js";
 
 const stockInfo = mongoose.model("stockInfo");
 
