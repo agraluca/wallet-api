@@ -99,11 +99,29 @@ async function addStockInWallet(req, res) {
 
 }
 
+async function updateWallet(req, res) {
+ try{
+  const paramsSchema = {email: "", wallet: []}
+  const errors = validateParams(req.body, paramsSchema)
+  if(errors){
+    return res.status(400).json(errors)
+  }
 
+  const {email, wallet} = req.body;
+
+  const response = await UserWalletModel.updateOne({email}, {wallet})
+
+  return res.status(200).json({message: "Carteira atualizda com sucesso!"})
+
+ }catch(error){
+   return res.status(400).json(error)
+ }
+}
 
 export const UserWallet = {
   index,
   save,
   remove,
-  addStockInWallet
+  addStockInWallet,
+  updateWallet
 }

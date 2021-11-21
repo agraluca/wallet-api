@@ -12,9 +12,12 @@ routes.get("/wallet/:userEmail", controllers.UserWallet.index)
 
 routes.post("/wallet", controllers.UserWallet.save)
 
+routes.post("/wallet/add", controllers.UserWallet.addStockInWallet)
+
+routes.put("/wallet/update", controllers.UserWallet.updateWallet)
+
 routes.delete("/wallet/:userEmail", controllers.UserWallet.remove)
 
-routes.post("/wallet/add", controllers.UserWallet.addStockInWallet)
 
 routes.get("/", (req, res) => res.send("Wallet API"));
 
