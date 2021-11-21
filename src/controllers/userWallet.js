@@ -81,14 +81,14 @@ async function addStockInWallet(req, res) {
       return res.status(400).json({errors})
     }
 
-    const {email, tickerName, companyName, tickerType, formattedPrice} = req.body
+    const {email, tickerName, companyName, tickerType, formattedPrice, qtd} = req.body
 
     const user = await UserWalletModel.findOne({email})
-    user.wallet.push({tickerName, companyName, tickerType, formattedPrice})
+    user.wallet.push({tickerName, companyName, tickerType, formattedPrice, qtd})
 
     const response = await UserWalletModel.updateOne({email}, {wallet: user.wallet})
 
-    return res.status(400).json(response)
+    return res.status(200).json({message: "Ativo adicionado com sucesso"})
 
   }catch(error){
     return res.status(400).json(error)
@@ -98,6 +98,8 @@ async function addStockInWallet(req, res) {
   
 
 }
+
+
 
 export const UserWallet = {
   index,

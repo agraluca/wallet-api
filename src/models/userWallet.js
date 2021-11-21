@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
-import {StockSchema} from './stock.js'
+import {StockObjectSchema} from './stock.js'
+
+const WalletStockModel = new mongoose.Schema({...StockObjectSchema, qtd: {type: Number}})
 
 export const UserWalletSchema = new mongoose.Schema({
   name: {
@@ -10,7 +12,7 @@ export const UserWalletSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  wallet: [StockSchema],
+  wallet: [WalletStockModel],
 
 });
 
