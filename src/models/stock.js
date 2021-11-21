@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const StockSchema = new mongoose.Schema({
+export const StockObjectSchema = {
   tickerName: {
     type: String,
     required: true,
@@ -17,6 +17,8 @@ const StockSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-});
+}
+
+export const StockSchema = new mongoose.Schema(StockObjectSchema);
 
 export default mongoose.model("stockInfo", StockSchema);
