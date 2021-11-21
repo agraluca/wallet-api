@@ -15,3 +15,17 @@ export function resetAtMidnight(fn) {
     resetAtMidnight();
   }, msToEnd);
 }
+
+
+export function validateParams(params, objectSchema){
+  const errors = [];
+
+  for(let key in objectSchema){
+    if(!params[key]){
+      errors.push({message: `O parâmetro ${key} é obrigatório!`})
+    }
+  }
+  return errors.length > 0 ? errors : null
+}
+
+
