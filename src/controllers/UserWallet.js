@@ -1,10 +1,22 @@
-import jwt from "jsonwebtoken";
 import UserWalletModel from "../models/UserWallet.js";
 import {
   getToken,
   validateParams,
   validateParamsArray,
 } from "../utils/index.js";
+
+export async function getUserWallet(req, res) {
+  const data = getToken(req);
+
+  try {
+    const userWallet = await UserWalletModel.findOne({ id: data.id }, "-_id");
+    return res
+      .status(200)
+      .json({ msg: "Carteira carregada com sucesso", userWallet });
+  } catch (error) {
+    return res.status(500).json({ msg: error });
+  }
+}
 
 export async function addStockToWallet(req, res) {
   const data = getToken(req);

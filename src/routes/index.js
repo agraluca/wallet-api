@@ -14,15 +14,15 @@ routes.post("/auth/signin", UserController.sigInUser);
 
 routes.post("/auth/refresh", checkToken, UserController.refreshToken);
 
-routes.get("/stock", checkToken, controllers.Stock.index);
-
 routes.get("/stock/:ticker", checkToken, controllers.Stock.show);
+
+routes.get("/wallet/get", checkToken, UserWalletController.getUserWallet);
 
 routes.post("/wallet/add", checkToken, UserWalletController.addStockToWallet);
 
-routes.post("/wallet/update", checkToken, UserWalletController.updateWallet);
+routes.put("/wallet/update", checkToken, UserWalletController.updateWallet);
 
-routes.post(
+routes.delete(
   "/wallet/remove",
   checkToken,
   UserWalletController.removeStockFromWallet
