@@ -1,4 +1,4 @@
-import StockModel from "../models/stock.js";
+import StockModel from "../models/Stock.js";
 
 function index(req, res) {
   StockModel.find((err, data) => {
@@ -14,7 +14,7 @@ function show(req, res) {
   const tickerName = req.params.ticker.toUpperCase();
   StockModel.findOne(
     { tickerName },
-    "tickerName companyName tyckerType formattedPrice",
+    "tickerName companyName tickerType formattedPrice",
     (err, data) => {
       if (err) {
         res.status(500).json(err);

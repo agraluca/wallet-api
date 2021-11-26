@@ -4,7 +4,7 @@ import Fs from "fs";
 import https from "https";
 import axios from "axios";
 
-import StockModel from "../models/stock.js";
+import StockModel from "../models/Stock.js";
 
 const __dirname = Path.resolve();
 

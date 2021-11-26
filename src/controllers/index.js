@@ -1,3 +1,3 @@
-import { Stock } from "./stock.js";
+import { Stock } from "./Stock.js";
 
 export { Stock };
