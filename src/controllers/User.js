@@ -49,7 +49,6 @@ export async function createUser(req, res) {
 
 export async function sigInUser(req, res) {
   const { email, password } = req.body;
-
   if (!email) {
     return res.status(422).json({ msg: "O email é obrigatório" });
   }
@@ -81,7 +80,19 @@ export async function sigInUser(req, res) {
       { expiresIn: "1d" }
     );
 
-    res.status(200).json({ msg: "Usuário logado com sucesso", token });
+    const refreshToken = jwt.sign(
+      {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+      secret,
+      { expiresIn: "25h" }
+    );
+
+    res
+      .status(200)
+      .json({ msg: "Usuário logado com sucesso", token, refreshToken });
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: "Aconteceu um erro no servidor" });
@@ -89,9 +100,9 @@ export async function sigInUser(req, res) {
 }
 
 export async function refreshToken(req, res) {
-  const { token } = req.body;
+  const { refreshToken } = req.body;
   const secret = process.env.SECRET;
-  const data = jwt.verify(token, secret);
+  const data = jwt.verify(refreshToken, secret);
 
   const user = await User.findById(data.id, "-password");
 
@@ -110,9 +121,21 @@ export async function refreshToken(req, res) {
       { expiresIn: "1d" }
     );
 
-    res
-      .status(200)
-      .json({ msg: "JWT atualizado com sucesso", token: newToken });
+    const newRefreshToken = jwt.sign(
+      {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+      secret,
+      { expiresIn: "25h" }
+    );
+
+    res.status(200).json({
+      msg: "JWT atualizado com sucesso",
+      token: newToken,
+      refreshToken: newRefreshToken,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: "Aconteceu um erro no servidor" });
