@@ -48,7 +48,7 @@ export function validateParams(params, objectSchema) {
   const errors = [];
 
   for (let key in objectSchema) {
-    if (!params[key]) {
+    if (!params.hasOwnProperty(key)) {
       errors.push({ msg: `O parâmetro ${key} é obrigatório!` });
     }
   }

@@ -21,14 +21,39 @@ export async function getUserWallet(req, res) {
 export async function addStockToWallet(req, res) {
   const data = getToken(req);
 
-  const { tickerName, companyName, tickerType, formattedPrice, qtd } = req.body;
+  const {
+    stock,
+    type,
+    companyName,
+    idealPorcentage,
+    currentPorcentage,
+    price,
+    stockAmount,
+    shouldBuyAmount,
+    status,
+  } = req.body;
+
+  console.log({
+    stock,
+    type,
+    companyName,
+    idealPorcentage,
+    currentPorcentage,
+    price,
+    stockAmount,
+    shouldBuyAmount,
+    status,
+  });
 
   const paramsSchema = {
-    tickerName: "",
-    companyName: "",
-    tickerType: "",
-    formattedPrice: "",
-    qtd: "",
+    stock: "",
+    type: "",
+    idealPorcentage: "",
+    currentPorcentage: "",
+    price: "",
+    stockAmount: "",
+    shouldBuyAmount: "",
+    status: "",
   };
 
   const errors = validateParams(req.body, paramsSchema);
@@ -38,33 +63,51 @@ export async function addStockToWallet(req, res) {
   }
 
   const user = await UserWalletModel.findOne({ id: data.id });
-
-  if (
-    user.wallet.find(
-      (ticker) => ticker.tickerName.toUpperCase() === tickerName.toUpperCase()
-    )
-  ) {
-    return res
-      .status(422)
-      .json({ msg: "Você já possui esse ativo na sua carteira" });
-  }
+  console.log("user", user);
 
   try {
     if (!user) {
+      console.log("entrou no if");
       const newWallet = new UserWalletModel({
         id: data.id,
-        wallet: [{ tickerName, companyName, tickerType, formattedPrice, qtd }],
+        wallet: [
+          {
+            stock,
+            type,
+            companyName,
+            idealPorcentage,
+            currentPorcentage,
+            price,
+            stockAmount,
+            shouldBuyAmount,
+            status,
+          },
+        ],
       });
       await newWallet.save();
       return res.status(200).json({ msg: "Ativo adicionado com sucesso!" });
     }
 
+    if (
+      user.wallet.find(
+        (ticker) => ticker.stock.toUpperCase() === stock.toUpperCase()
+      )
+    ) {
+      return res
+        .status(422)
+        .json({ msg: "Você já possui esse ativo na sua carteira" });
+    }
+
     user.wallet.push({
-      tickerName,
+      stock,
+      type,
       companyName,
-      tickerType,
-      formattedPrice,
-      qtd,
+      idealPorcentage,
+      currentPorcentage,
+      price,
+      stockAmount,
+      shouldBuyAmount,
+      status,
     });
 
     await UserWalletModel.updateOne({ id: data.id }, { wallet: user.wallet });
@@ -78,11 +121,14 @@ export async function addStockToWallet(req, res) {
 export async function updateWallet(req, res) {
   const paramsSchema = { wallet: [] };
   const walletSchema = [
-    "tickerName",
-    "companyName",
-    "tickerType",
-    "formattedPrice",
-    "qtd",
+    "stock",
+    "type",
+    "idealPorcentage",
+    "currentPorcentage",
+    "price",
+    "stockAmount",
+    "shouldBuyAmount",
+    "status",
   ];
   const errors = validateParams(req.body, paramsSchema);
   if (errors) {
