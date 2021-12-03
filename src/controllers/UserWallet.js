@@ -36,7 +36,7 @@ export async function getUserWallet(req, res) {
 
     return res.status(200).json({
       msg: "Carteira carregada com sucesso",
-      userWallet: { id: userWallet.id, wallet },
+      userWallet: { id: userWallet.id, wallet: userWallet.wallet },
     });
   } catch (error) {
     return res.status(500).json({ msg: error });

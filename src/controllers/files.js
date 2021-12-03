@@ -106,8 +106,8 @@ async function runApp(fridaySubtract = 3, yesterdaySubtract = 1) {
               { $set: { "wallet.$.price": formattedNumberPrice } },
               { multi: true }
             );
-          } catch (e) {
-            console.error(e);
+          } catch (err) {
+            console.error(err);
           }
 
           const line = new StockModel({
