@@ -23,7 +23,7 @@ routes.post("/wallet/add", checkToken, UserWalletController.addStockToWallet);
 routes.put("/wallet/update", checkToken, UserWalletController.updateWallet);
 
 routes.delete(
-  "/wallet/remove",
+  "/wallet/remove/:id",
   checkToken,
   UserWalletController.removeStockFromWallet
 );

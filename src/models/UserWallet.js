@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { StockObjectSchema } from "./Stock.js";
 
 const WalletStockModel = new mongoose.Schema({
   stock: {

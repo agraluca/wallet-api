@@ -5,6 +5,7 @@ import https from "https";
 import axios from "axios";
 
 import StockModel from "../models/Stock.js";
+import UserWalletModel from "../models/UserWallet.js";
 
 const __dirname = Path.resolve();
 
@@ -65,7 +66,7 @@ async function runApp(fridaySubtract = 3, yesterdaySubtract = 1) {
         data.pop();
         data.shift();
 
-        data.forEach((item) => {
+        data.forEach(async (item) => {
           const tickerName = item.slice(12, 23).trim();
           const companyName = item.slice(27, 39).trim();
           const tickerType = item.slice(39, 42).trim();
@@ -89,6 +90,25 @@ async function runApp(fridaySubtract = 3, yesterdaySubtract = 1) {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           }).format(unformattedPrice / divisionNumber);
+
+          const formattedPriceWithoutSign = formattedPrice
+            .slice(2)
+            .replace(".", "")
+            .replace(",", ".")
+            .trim();
+
+          const formattedNumberPrice = Number(formattedPriceWithoutSign);
+          try {
+            await UserWalletModel.updateMany(
+              {
+                "wallet.stock": tickerName.toLowerCase(),
+              },
+              { $set: { "wallet.$.price": formattedNumberPrice } },
+              { multi: true }
+            );
+          } catch (e) {
+            console.error(e);
+          }
 
           const line = new StockModel({
             tickerName,

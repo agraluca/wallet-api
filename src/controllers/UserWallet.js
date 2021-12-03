@@ -1,4 +1,5 @@
 import UserWalletModel from "../models/UserWallet.js";
+// import StockModel from "../models/Stock.js";
 import {
   getToken,
   validateParams,
@@ -10,9 +11,33 @@ export async function getUserWallet(req, res) {
 
   try {
     const userWallet = await UserWalletModel.findOne({ id: data.id }, "-_id");
-    return res
-      .status(200)
-      .json({ msg: "Carteira carregada com sucesso", userWallet });
+
+    // const userWalletWithPrice = await Promise.all(
+    //   userWallet.wallet.map(async (stockInfo) => {
+    //     const { formattedPrice } = await StockModel.findOne({
+    //       tickerName: stockInfo.stock.toUpperCase(),
+    //     });
+
+    //     const objToReturn = {
+    //       stock: stockInfo.stock,
+    //       type: stockInfo.type,
+    //       price: Number(formattedPrice),
+    //       idealPorcentage: stockInfo.idealPorcentage,
+    //       currentPorcentage: stockInfo.currentPorcentage,
+    //       stockAmount: stockInfo.stockAmount,
+    //       shouldBuyAmount: stockInfo.shouldBuyAmount,
+    //       status: stockInfo.status,
+    //       _id: stockInfo._id,
+    //     };
+
+    //     return objToReturn;
+    //   })
+    // );
+
+    return res.status(200).json({
+      msg: "Carteira carregada com sucesso",
+      userWallet: { id: userWallet.id, wallet },
+    });
   } catch (error) {
     return res.status(500).json({ msg: error });
   }
@@ -33,18 +58,6 @@ export async function addStockToWallet(req, res) {
     status,
   } = req.body;
 
-  console.log({
-    stock,
-    type,
-    companyName,
-    idealPorcentage,
-    currentPorcentage,
-    price,
-    stockAmount,
-    shouldBuyAmount,
-    status,
-  });
-
   const paramsSchema = {
     stock: "",
     type: "",
@@ -63,11 +76,9 @@ export async function addStockToWallet(req, res) {
   }
 
   const user = await UserWalletModel.findOne({ id: data.id });
-  console.log("user", user);
 
   try {
     if (!user) {
-      console.log("entrou no if");
       const newWallet = new UserWalletModel({
         id: data.id,
         wallet: [
@@ -152,10 +163,12 @@ export async function updateWallet(req, res) {
 }
 
 export async function removeStockFromWallet(req, res) {
-  const { _id } = req.body;
+  const { id } = req.params;
+
   const data = getToken(req);
   const user = await UserWalletModel.findOne({ id: data.id });
-  const wallet = user.wallet.filter((item) => item.id !== _id);
+  const wallet = user?.wallet?.filter((item) => item._id.toString() !== id);
+
   try {
     await UserWalletModel.updateOne({ id: data.id }, { wallet });
     return res.status(200).json({
