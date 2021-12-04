@@ -28,6 +28,24 @@ routes.delete(
   UserWalletController.removeStockFromWallet
 );
 
+routes.post(
+  "/walletFixedIncome/add",
+  checkToken,
+  UserWalletController.addFixedIncomeToWallet
+);
+
+routes.put(
+  "/walletFixedIncome/update",
+  checkToken,
+  UserWalletController.updateFixedIncomeToWallet
+);
+
+routes.delete(
+  "/walletFixedIncome/remove/:id",
+  checkToken,
+  UserWalletController.removeFixedIncomeFromWallet
+);
+
 routes.get("/", (req, res) => res.send("Wallet API"));
 
 export default routes;

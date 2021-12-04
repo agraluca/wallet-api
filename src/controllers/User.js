@@ -3,6 +3,8 @@ import User from "../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
+import UserWalletModel from "../models/UserWallet.js";
+
 export async function createUser(req, res) {
   const { name, email, password, confirmPassword } = req.body;
   if (!name) {
@@ -40,6 +42,12 @@ export async function createUser(req, res) {
 
   try {
     await user.save();
+    const newWallet = new UserWalletModel({
+      id: user._id,
+      wallet: [],
+      walletFixedIncome: [],
+    });
+    await newWallet.save();
     res.status(201).json({ msg: "Usuário criado com sucesso" });
   } catch (err) {
     console.error(err);

@@ -11,7 +11,9 @@ function show(req, res) {
       } else {
         data
           ? res.status(200).json(data)
-          : res.status(404).json({ error: "Not Found a Stock with this name" });
+          : res
+              .status(404)
+              .json({ error: "Não foi encontrado um ativo com esse nome" });
       }
     }
   );
