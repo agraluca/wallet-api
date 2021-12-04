@@ -10,11 +10,6 @@ export async function getUserWallet(req, res) {
   const data = getToken(req);
   try {
     const userWallet = await UserWalletModel.findOne({ id: data.id }, "-_id");
-    if (!userWallet) {
-      return res.status(201).json({
-        msg: "Seja bem-vindo! Clique em adicionar para criar sua carteira.",
-      });
-    }
 
     return res.status(200).json({
       msg: "Carteira carregada com sucesso",
