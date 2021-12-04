@@ -8,31 +8,13 @@ import {
 
 export async function getUserWallet(req, res) {
   const data = getToken(req);
-
   try {
     const userWallet = await UserWalletModel.findOne({ id: data.id }, "-_id");
-
-    // const userWalletWithPrice = await Promise.all(
-    //   userWallet.wallet.map(async (stockInfo) => {
-    //     const { formattedPrice } = await StockModel.findOne({
-    //       tickerName: stockInfo.stock.toUpperCase(),
-    //     });
-
-    //     const objToReturn = {
-    //       stock: stockInfo.stock,
-    //       type: stockInfo.type,
-    //       price: Number(formattedPrice),
-    //       idealPorcentage: stockInfo.idealPorcentage,
-    //       currentPorcentage: stockInfo.currentPorcentage,
-    //       stockAmount: stockInfo.stockAmount,
-    //       shouldBuyAmount: stockInfo.shouldBuyAmount,
-    //       status: stockInfo.status,
-    //       _id: stockInfo._id,
-    //     };
-
-    //     return objToReturn;
-    //   })
-    // );
+    if (!userWallet) {
+      return res.status(201).json({
+        msg: "Seja bem-vindo! Clique em adicionar para criar sua carteira.",
+      });
+    }
 
     return res.status(200).json({
       msg: "Carteira carregada com sucesso",
