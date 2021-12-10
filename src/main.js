@@ -7,7 +7,6 @@ import filesController from "./controllers/Files.js";
 import { resetAtMidnight } from "./utils/index.js";
 
 import db from "./config/db.js";
-
 const app = express();
 env.config();
 const port = process.env.PORT || 4000;
