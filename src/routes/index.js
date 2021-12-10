@@ -3,7 +3,7 @@ import express from "express";
 import * as UserController from "../controllers/User.js";
 import * as controllers from "../controllers/index.js";
 import * as UserWalletController from "../controllers/UserWallet.js";
-import FilesController from "../controllers/files.js";
+import FilesController from "../controllers/Files.js";
 
 import { checkToken } from "../utils/index.js";
 
