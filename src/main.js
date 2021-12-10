@@ -3,7 +3,7 @@ import cors from "cors";
 import env from "dotenv";
 
 import routes from "./routes/index.js";
-import filesController from "./controllers/Files.js";
+import runApp from "./controllers/Files.js";
 import { resetAtMidnight } from "./utils/index.js";
 
 import db from "./config/db.js";
@@ -16,7 +16,7 @@ app.use(cors());
 
 db.connect();
 
-resetAtMidnight(filesController.runApp);
+resetAtMidnight(runApp);
 
 app.use(routes);
 app.listen(port, () => {
