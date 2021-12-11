@@ -12,12 +12,13 @@
     "yauzl": "^2.10.0"
   },
   "scripts": {
-    "start": "nodemon src/main.js"
+    "start": "node src/main.js",
+    "develop": "nodemon src/main.js"
   },
   "type": "module",
-  "name": "ocr-study",
+  "name": "wallet-api",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "main.js",
   "license": "MIT",
   "engines": {
     "node": "14.17.6"
