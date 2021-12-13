@@ -33,10 +33,7 @@ async function getFile(fileName) {
   return `${path}/${fileName}`.replace(".ZIP", ".TXT");
 }
 
-export default async function runApp(
-  fridaySubtract = 3,
-  yesterdaySubtract = 1
-) {
+export async function runApp(fridaySubtract = 3, yesterdaySubtract = 1) {
   await StockModel.deleteMany({});
 
   const date = new Date();

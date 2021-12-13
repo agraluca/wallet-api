@@ -3,7 +3,7 @@ import cors from "cors";
 import env from "dotenv";
 
 import routes from "./src/routes/index.js";
-import runApp from "./src/controllers/Files.js";
+import { runApp } from "./src/controllers/Files.js";
 import { resetAtMidnight } from "./src/utils/index.js";
 
 import db from "./src/config/db.js";
