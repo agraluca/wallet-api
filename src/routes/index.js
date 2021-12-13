@@ -1,9 +1,9 @@
 import express from "express";
 
 import * as UserController from "../controllers/User.js";
-import * as controllers from "../controllers/index.js";
+import * as StockController from "../controllers/Stock.js";
 import * as UserWalletController from "../controllers/UserWallet.js";
-import runApp from "../controllers/Files.js";
+import * as FilesController from "../controllers/Files.js";
 
 import { checkToken } from "../utils/index.js";
 
@@ -15,7 +15,7 @@ routes.post("/auth/signin", UserController.sigInUser);
 
 routes.post("/auth/refresh", checkToken, UserController.refreshToken);
 
-routes.get("/stock/:ticker", checkToken, controllers.Stock.show);
+routes.get("/stock/:ticker", checkToken, StockController.showStock);
 
 routes.get("/wallet/get", checkToken, UserWalletController.getUserWallet);
 
@@ -47,7 +47,7 @@ routes.delete(
   UserWalletController.removeFixedIncomeFromWallet
 );
 
-routes.get("/populate", runApp);
+routes.get("/populate", FilesController.runApp);
 
 routes.get("/", (req, res) => res.send("Wallet API"));
 

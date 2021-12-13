@@ -1,6 +1,6 @@
 import StockModel from "../models/Stock.js";
 
-function show(req, res) {
+export function showStock(req, res) {
   const tickerName = req.params.ticker.toUpperCase();
   StockModel.findOne(
     { tickerName },
@@ -18,7 +18,3 @@ function show(req, res) {
     }
   );
 }
-
-export const Stock = {
-  show,
-};
