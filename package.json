@@ -12,8 +12,8 @@
     "yauzl": "^2.10.0"
   },
   "scripts": {
-    "start": "node src/main.js",
-    "develop": "nodemon src/main.js"
+    "start": "node main.js",
+    "develop": "nodemon main.js"
   },
   "type": "module",
   "name": "wallet-api",
