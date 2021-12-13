@@ -2,11 +2,11 @@ import express from "express";
 import cors from "cors";
 import env from "dotenv";
 
-import routes from "./src/routes/index.js";
-import { runApp } from "./src/controllers/Files.js";
-import { resetAtMidnight } from "./src/utils/index.js";
+import routes from "./routes/index.js";
+import { runApp } from "./controllers/Files.js";
+import { resetAtMidnight } from "./utils/index.js";
 
-import db from "./src/config/db.js";
+import db from "./config/db.js";
 const app = express();
 env.config();
 const port = process.env.PORT || 4000;
