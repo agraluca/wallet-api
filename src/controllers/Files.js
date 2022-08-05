@@ -9,12 +9,16 @@ import UserWalletModel from "../models/UserWallet.js";
 
 const __dirname = Path.resolve();
 
+let fridaySubtract = 3;
+let yesterdaySubtract = 1;
+
 async function getFile(fileName) {
   const path = Path.resolve(__dirname, "src", "files");
 
   const pathFile = "/InstDados/SerHist/" + fileName;
   const httpsAgent = new https.Agent({ rejectUnauthorized: false });
   axios.defaults.httpsAgent = httpsAgent;
+
   const response = await axios.get(
     `https://bvmf.bmfbovespa.com.br${pathFile}`,
     {
@@ -25,7 +29,6 @@ async function getFile(fileName) {
       responseType: "arraybuffer",
     }
   );
-
   const zip = new AdmZip(response.data);
 
   zip.extractAllTo(path, true);
@@ -33,7 +36,7 @@ async function getFile(fileName) {
   return `${path}/${fileName}`.replace(".ZIP", ".TXT");
 }
 
-export async function runApp(fridaySubtract = 3, yesterdaySubtract = 1) {
+export async function runApp() {
   await StockModel.deleteMany({});
 
   const date = new Date();
@@ -51,11 +54,14 @@ export async function runApp(fridaySubtract = 3, yesterdaySubtract = 1) {
       yesterday.getDate().toString().length === 1
         ? `0${yesterday.getDate()}`
         : yesterday.getDate();
-    const month = yesterday.getMonth() + 1;
+
+    const month =
+      (yesterday.getMonth() + 1).toString().length === 1
+        ? `0${yesterday.getMonth() + 1}`
+        : yesterday.getMonth() + 1;
 
     const fullYear = yesterday.getFullYear();
     const formattedDate = `${day}${month}${fullYear}`;
-
     try {
       const archivePath = await getFile(`COTAHIST_D${formattedDate}.ZIP`);
 
@@ -72,38 +78,14 @@ export async function runApp(fridaySubtract = 3, yesterdaySubtract = 1) {
           const tickerType = item.slice(39, 42).trim();
           const stringPrice = item.slice(109, 121);
 
-          const priceNumberList = [...stringPrice].reduce((acc, item) => {
-            if (Number(item) !== 0) {
-              acc.push(item);
-            }
+          const formattedPrice = Number(stringPrice) / 100;
 
-            return acc;
-          }, []);
-          const index = stringPrice.indexOf(priceNumberList[0]);
-          const unformattedPrice = stringPrice.slice(index, stringPrice.length);
-
-          const divisionNumber = unformattedPrice.length > 2 ? 100 : 1;
-
-          const formattedPrice = new Intl.NumberFormat("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }).format(unformattedPrice / divisionNumber);
-
-          const formattedPriceWithoutSign = formattedPrice
-            .slice(2)
-            .replace(".", "")
-            .replace(",", ".")
-            .trim();
-
-          const formattedNumberPrice = Number(formattedPriceWithoutSign);
           try {
             await UserWalletModel.updateMany(
               {
                 "wallet.stock": tickerName.toLowerCase(),
               },
-              { $set: { "wallet.$.price": formattedNumberPrice } },
+              { $set: { "wallet.$.price": formattedPrice } },
               { multi: true }
             );
           } catch (err) {
@@ -114,10 +96,10 @@ export async function runApp(fridaySubtract = 3, yesterdaySubtract = 1) {
             tickerName,
             companyName,
             tickerType,
-            formattedPrice: formattedPrice.slice(2).replace(",", ".").trim(),
+            formattedPrice,
           });
 
-          line.save();
+          await line.save();
         });
 
         Fs.unlink(archivePath, (err) => {

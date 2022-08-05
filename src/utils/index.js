@@ -14,7 +14,7 @@ export function resetAtMidnight(fn) {
 
   setTimeout(() => {
     fn();
-    resetAtMidnight();
+    resetAtMidnight(fn);
   }, msToEnd);
 }
 

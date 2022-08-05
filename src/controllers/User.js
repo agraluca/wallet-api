@@ -8,27 +8,27 @@ import UserWalletModel from "../models/UserWallet.js";
 export async function createUser(req, res) {
   const { name, email, password, confirmPassword } = req.body;
   if (!name) {
-    return res.status(422).json({ msg: "O nome é obrigatório" });
+    return res.status(400).json({ msg: "O nome é obrigatório" });
   }
   if (!email) {
-    return res.status(422).json({ msg: "O email é obrigatório" });
+    return res.status(400).json({ msg: "O email é obrigatório" });
   }
   if (!password) {
-    return res.status(422).json({ msg: "A senha é obrigatório" });
+    return res.status(400).json({ msg: "A senha é obrigatório" });
   }
   if (!confirmPassword) {
     return res
-      .status(422)
+      .status(400)
       .json({ msg: "A confirmação de senha é obrigatória" });
   }
   if (confirmPassword !== password) {
-    return res.status(422).json({ msg: "As senhas não conferem" });
+    return res.status(400).json({ msg: "As senhas não conferem" });
   }
 
   const userExists = await User.findOne({ email });
 
   if (userExists) {
-    return res.status(422).json({ msg: "Esse email ja foi utilizado" });
+    return res.status(409).json({ msg: "Esse email ja foi utilizado" });
   }
 
   const salt = await bcrypt.genSalt(16);
@@ -58,10 +58,10 @@ export async function createUser(req, res) {
 export async function sigInUser(req, res) {
   const { email, password } = req.body;
   if (!email) {
-    return res.status(422).json({ msg: "O email é obrigatório" });
+    return res.status(400).json({ msg: "O email é obrigatório" });
   }
   if (!password) {
-    return res.status(422).json({ msg: "A senha é obrigatória" });
+    return res.status(400).json({ msg: "A senha é obrigatória" });
   }
 
   const user = await User.findOne({ email });
@@ -73,7 +73,7 @@ export async function sigInUser(req, res) {
   const checkPassword = await bcrypt.compare(password, user.password);
 
   if (!checkPassword) {
-    return res.status(422).json({ msg: "Senha inválida" });
+    return res.status(401).json({ msg: "Senha inválida" });
   }
 
   try {

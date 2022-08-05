@@ -53,7 +53,7 @@ export async function addStockToWallet(req, res) {
   const errors = validateParams(req.body, paramsSchema);
 
   if (errors) {
-    return res.status(422).json({ msg: errors });
+    return res.status(400).json({ msg: errors });
   }
 
   const user = await UserWalletModel.findOne({ id: data.id });
@@ -65,7 +65,7 @@ export async function addStockToWallet(req, res) {
       )
     ) {
       return res
-        .status(422)
+        .status(409)
         .json({ msg: "Você já possui esse ativo na sua carteira" });
     }
 
@@ -103,7 +103,7 @@ export async function updateWallet(req, res) {
   ];
   const errors = validateParams(req.body, paramsSchema);
   if (errors) {
-    return res.status(422).json({ msg: errors });
+    return res.status(400).json({ msg: errors });
   }
   const data = getToken(req);
   const { wallet } = req.body;
@@ -111,7 +111,7 @@ export async function updateWallet(req, res) {
   const errorsOnWallet = validateParamsArray(wallet, walletSchema);
 
   if (errorsOnWallet) {
-    return res.status(422).json({ msg: errorsOnWallet });
+    return res.status(400).json({ msg: errorsOnWallet });
   }
 
   try {
